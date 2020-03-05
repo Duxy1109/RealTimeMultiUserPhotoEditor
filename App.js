@@ -14,6 +14,7 @@ import {
   View,
   Text,
   StatusBar,
+  TextInput,
   Platform,
   Button,
   TouchableOpacity,
@@ -35,17 +36,48 @@ import { RNPhotoEditor } from 'react-native-photo-editor';
 
 const App: () => React$Node = () => {
 
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [error, setError] = useState("");
+  const [signUp, setSignUp] = useState(false);
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [name, setName] = useState("");
+  const [image, setImage] = useState(null);
+
   var RNFS = require('react-native-fs');
 
-  const EnterEditor = () =>{
-    RNPhotoEditor.Edit({
-        path: RNFS.DocumentDirectoryPath + "/photo.jpg"
-    });
-    path = RNFS.DocumentDirectoryPath
-  }
+  const reset = () => {
+    setError("");
+    setPassword("");
+    setConfirm("");
+    setName("");
+    setImage(null);
+  };
 
-  const [image, setImage] = useState(null);
- 
+  const logIn = () => {
+    setLoggedIn(true);
+  };
+
+  const logOut = () => {
+    setLoggedIn(false);
+  };
+
+  const startSignUp = () => {
+    setSignUp(true);
+    setError(false);
+  };
+
+  const cancel = () => {
+    setSignUp(false);
+  };
+
+  const signUpPressed = () => {
+    setLoggedIn(true);
+    setSignUp(false);
+    reset();
+  };
+
   const openPhotos = () =>{
   switch(Platform.OS){
     case "ios":
@@ -59,127 +91,196 @@ const App: () => React$Node = () => {
    }
   }
 
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1
+  const EnterEditor = () =>{
+    RNPhotoEditor.Edit({
+        path: RNFS.DocumentDirectoryPath + "/photo.jpg"
     });
+    path = RNFS.DocumentDirectoryPath
+  }
 
-    console.log(result);
-
-    if (!result.cancelled) {
-      setImage(result.uri);
-    }
-  };
-
-  // RNPhotoEditor.Edit();
-
-  return (
-    <>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <Header />
-          {global.HermesInternal == null ? null : (
-            <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
-            </View>
-          )}
-          <View style={{ justifyContent: "center", alignItems: "center" }}>
-            <TouchableOpacity
-              onPress={EnterEditor}
-              activeOpacity={0.7}
-              style={{
-                height: 100,
-                width: 100,
-                backgroundColor: "white",
-                borderRadius: 100,
-                marginBottom: 20
-              }}
-            >
-              {image && (
-                <Image
-                  source={{ uri: image }}
-                  style={{ width: 100, height: 100, borderRadius: 100 }}
-                />
-              )}
-            </TouchableOpacity>
+  if (loggedIn) {
+    return (
+      <ScrollView
+        contentContainerStyle={styles.loginView}
+        keyboardShouldPersistTaps={"handled"}
+      >
+        <Text style={styles.logoLogin}>CoPics</Text>
+        <View style={{ justifyContent: "center", alignItems: "center" }}>
+          <TouchableOpacity
+            onPress={EnterEditor}
+            activeOpacity={0.7}
+            style={{
+              height: 100,
+              width: 100,
+              backgroundColor: "white",
+              borderRadius: 100,
+              marginBottom: 20
+            }}
+          >
+            {image && (
+              <Image
+                source={{ uri: image }}
+                style={{ width: 100, height: 100, borderRadius: 100 }}
+              />
+            )}
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    );
+  }else if (signUp){
+    return (
+      <ScrollView
+        contentContainerStyle={styles.loginView}
+        keyboardShouldPersistTaps={"handled"}
+      >
+        <Text style={styles.logoSignup}>CoPics</Text>
+        <View style={{ justifyContent: "center", alignItems: "center" }}>
+        </View>
+        <View style={{ justifyContent: "center", alignItems: "center" }}>
+          <TouchableOpacity
+            onPress={EnterEditor}
+            activeOpacity={0.7}
+            style={{
+              height: 100,
+              width: 100,
+              backgroundColor: "white",
+              borderRadius: 100,
+              marginBottom: 20
+            }}
+          >
+            {image && (
+              <Image
+                source={{ uri: image }}
+                style={{ width: 100, height: 100, borderRadius: 100 }}
+              />
+            )}
+          </TouchableOpacity>
+        </View>
+        <TextInput
+          value={phone}
+          onChangeText={setPhone}
+          placeholder={"Phone"}
+          style={styles.inputField}
+        />
+        <TextInput
+          value={name}
+          onChangeText={setName}
+          placeholder={"Name"}
+          style={styles.inputField}
+        />
+        <TextInput
+          value={password}
+          onChangeText={setPassword}
+          placeholder={"Password"}
+          style={styles.inputField}
+        />
+        <TextInput
+          value={confirm}
+          onChangeText={setConfirm}
+          placeholder={"Confirm password"}
+          style={styles.inputField}
+        />
+        <TouchableOpacity
+          onPress={signUpPressed}
+          style={styles.signupViewButton}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.signinButtonText}>Sign up</Text>
+        </TouchableOpacity>
+        <Text style={{ color: "red" }}>{error}</Text>
+        <Button title="Cancel" onPress={cancel} color="grey" />
+      </ScrollView>
+    );
+  }else{
+    return (
+      <ScrollView
+        contentContainerStyle={styles.loginView}
+        keyboardShouldPersistTaps={"handled"}
+      >
+        <Text style={styles.logoLogin}>CoPics</Text>
+        <TextInput
+          value={phone}
+          onChangeText={setPhone}
+          placeholder={"Phone"}
+          style={styles.inputField}
+        />
+        <TextInput
+          value={password}
+          onChangeText={setPassword}
+          placeholder={"Password"}
+          style={styles.inputField}
+        />
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            onPress={logIn}
+            style={styles.signinButton}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.signinButtonText}>Sign in</Text>
+          </TouchableOpacity>
+          <View style={styles.signupButtonContainer}>
+            <Button title="Sign up" onPress={startSignUp} color="grey" />
           </View>
-          <View style={styles.body}>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>path</Text>
-              <Text style={styles.sectionDescription}>
-                Edit <Text style={styles.highlight}>App.js</Text> to change this
-                screen and then come back to see your edits.
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>See Your Changes</Text>
-              <Text style={styles.sectionDescription}>
-                <ReloadInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Debug</Text>
-              <Text style={styles.sectionDescription}>
-                <DebugInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Learn More</Text>
-              <Text style={styles.sectionDescription}>
-                Read the docs to discover what to do next:
-              </Text>
-            </View>
-            <LearnMoreLinks />
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </>
-  );
-};
+        </View>
+        <Text style={{ color: "red" }}>{error}</Text>
+      </ScrollView>
+    );
+  }
+}
 
 const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: Colors.lighter,
+  logoLogin: {
+    fontSize: 55,
+    marginBottom: 100,
+    color: "#71D2D2"
   },
-  engine: {
-    position: 'absolute',
-    right: 0,
+  logoSignup: {
+    fontSize: 55,
+    marginBottom: 50,
+    color: "#71D2D2"
   },
-  body: {
-    backgroundColor: Colors.white,
+  loginView: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#f2f2f2",
+    alignItems: "center",
+    paddingHorizontal: 50
   },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  inputField: {
+    backgroundColor: "white",
+    width: "90%",
+    margin: 10,
+    paddingVertical: 15,
+    paddingHorizontal: 25,
+    borderRadius: 40,
+    fontSize: 16
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
+  signinButton: {
+    marginTop: 20,
+    backgroundColor: "#5ACFCF",
+    height: 40,
+    width: 120,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 20
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    color: Colors.dark,
+  signupViewButton: {
+    marginTop: 20,
+    backgroundColor: "#5ACFCF",
+    height: 40,
+    width: 120,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 20
   },
-  highlight: {
-    fontWeight: '700',
+  signinButtonText: {
+    color: "white",
+    fontSize: 18
   },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
-  },
+  signupButtonContainer: {
+    marginTop: 10
+  }
 });
 
 export default App;
