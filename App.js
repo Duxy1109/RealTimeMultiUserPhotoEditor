@@ -79,8 +79,8 @@
       setSignUp(false);
       reset();
     };
-      //选择图片
-    const selectPhotoTapped = () => {
+    
+    const selectPhoto = () => {
       const options = {
           title: 'Import Photo',
           cancelButtonTitle: 'Cancel',
@@ -115,7 +115,7 @@
 
           RNPhotoEditor.Edit({
             path: response.uri
-            });
+          });
         }
       });
     }
@@ -133,13 +133,6 @@
      }
     }
 
-    const EnterEditor = () =>{
-      RNPhotoEditor.Edit({
-          path: RNFS.DocumentDirectoryPath + "/photo.jpg"
-      });
-      path = RNFS.DocumentDirectoryPath
-    }
-
     if (loggedIn) {
       return (
         <ScrollView
@@ -147,21 +140,9 @@
           keyboardShouldPersistTaps={"handled"}
         >
           <Text style={styles.logoLogin}>CoPics</Text>
-
-        </ScrollView>
-      );
-    }else if (signUp){
-      return (
-        <ScrollView
-          contentContainerStyle={styles.loginView}
-          keyboardShouldPersistTaps={"handled"}
-        >
-          <Text style={styles.logoSignup}>CoPics</Text>
-          <View style={{ justifyContent: "center", alignItems: "center" }}>
-          </View>
           <View style={{ justifyContent: "center", alignItems: "center" }}>
             <TouchableOpacity
-              onPress={selectPhotoTapped}
+              onPress={selectPhoto}
               activeOpacity={0.7}
               style={{
                 height: 100,
@@ -178,6 +159,17 @@
                 />
               )}
             </TouchableOpacity>
+          </View>
+        </ScrollView>
+      );
+    }else if (signUp){
+      return (
+        <ScrollView
+          contentContainerStyle={styles.loginView}
+          keyboardShouldPersistTaps={"handled"}
+        >
+          <Text style={styles.logoSignup}>CoPics</Text>
+          <View style={{ justifyContent: "center", alignItems: "center" }}>
           </View>
           <TextInput
             value={phone}
